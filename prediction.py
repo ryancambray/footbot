@@ -15,12 +15,12 @@ example response
 
 
 """
+api = Twython(tokens.consumer_key, tokens.consumer_secret, tokens.access_token, tokens.access_token_secret)
+json_response = {"data": [{"federation": "UEFA", "home_team": "Manchester City", "prediction": "1", "status": "pending", "season": "2017 - 2018", "start_date": "2018-04-22T16:30:00", "result": "", "odds": {"X": 8.458, "12": 1.053, "2": 20.46, "X2": 5.864, "1": 1.135, "1X": 1.013}, "id": 13249, "competition_cluster": "England", "last_update_at": "2018-04-22T14:06:35.857000", "competition_name": "Premiership", "is_expired": false, "away_team": "Swansea"}]}
 
-json_response = {'data': [{'odds': {'2': 6.37, 'X': 3.911, '1X': 1.113, '12': 1.213, '1': 1.553, 'X2': 2.466}, 'home_team': 'Atletico Madrid', 'prediction': '1', 'status': 'pending', 'id': 13287, 'start_date': '2018-04-22T19:45:00', 'competition_name': 'Primera Division', 'season': '2017 - 2018', 'federation': 'UEFA', 'competition_cluster': 'Spain', 'away_team': 'Real Betis', 'result': '', 'is_expired': False, 'last_update_at': '2018-04-22T14:06:35.857000'}, {'odds': {'2': 12.426, 'X': 5.661, '1X': 1.038, '12': 1.102, '1': 1.213, 'X2': 3.932}, 'home_team': 'Sporting CP', 'prediction': '1', 'status': 'pending', 'id': 13406, 'start_date': '2018-04-22T20:15:00', 'competition_name': 'Primeira Liga', 'season': '2017 - 2018', 'federation': 'UEFA', 'competition_cluster': 'Portugal', 'away_team': 'Boavista', 'result': '', 'is_expired': False, 'last_update_at': '2018-04-22T14:06:35.857000'}]}
 
-
-headers = {"X-Mashape-Key": tokens.x_mashape_key, "Accept" : "application/json"}
-response = requests.get(url="https://football-prediction-api.p.mashape.com/api/v1/predictions?federation=uefa", headers=headers)
+# headers = {"X-Mashape-Key": tokens.x_mashape_key, "Accept" : "application/json"}
+# response = requests.get(url="https://football-prediction-api.p.mashape.com/api/v1/predictions?federation=uefa", headers=headers)
 #json_response = response.json()
 
 #print(json.dumps(json_response, indent=4))
@@ -39,3 +39,23 @@ def get_wanted_league_games_from_json(json_data):
             leagues_json.update()
     return leagues_json
 
+def get_the_relevant_information_from_previous_query(json_data):
+    home_team = json_data["home_team"]
+    away_team = json_data["away_team"]
+    prediction = json_data["prediction"]
+    odds = json_data["odds"]
+    date = json_data["start_date"]
+
+def tweeting_relevant_data(home_team, away_team, prediction, odds):
+    if prediction == 1:
+        winner = home_team, "win"
+    elif prediction == "X":
+        winner = "It'll be a draw"
+    else:
+        winner = away_team, "win"
+
+    tweet = "{} vs {}\n Time: {}\n Prediction: {} \n Odds: {}".format(home_team, away_team, start_date, winner, odds)
+
+    api.update_status(status=tweet)
+
+get_wanted_league_games_from_json(json_response)
