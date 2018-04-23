@@ -69,8 +69,7 @@ def tweeting_relevant_data(competition_name, home_team, away_team, prediction, d
     print("Tweet: {}".format(tweet))
 
 def format_date_time(date_and_time):
-    date = date_and_time.split("T")[0]
-    time = date_and_time.split("T")[1]
+    date,time = date_and_time.split("T")
 
     year, month, day = date.split("-")
 
