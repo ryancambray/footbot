@@ -2,6 +2,7 @@ from twython import Twython
 import requests
 import json
 import tokens
+from datetime import datetime
 
 """
 example response
@@ -15,13 +16,16 @@ example response
 
 
 """
-api = Twython(tokens.consumer_key, tokens.consumer_secret, tokens.access_token, tokens.access_token_secret)
-#json_response = {"data": [{"federation": "UEFA", "home_team": "Manchester City", "prediction": "1", "status": "pending", "season": "2017 - 2018", "start_date": "2018-04-22T16:30:00", "result": "", "odds": {"X": 8.458, "12": 1.053, "2": 20.46, "X2": 5.864, "1": 1.135, "1X": 1.013}, "id": 13249, "competition_cluster": "England", "last_update_at": "2018-04-22T14:06:35.857000", "competition_name": "Premiership", "is_expired": "false", "away_team": "Swansea"}]}
 
+twitter_api = Twython(tokens.consumer_key, tokens.consumer_secret, tokens.access_token, tokens.access_token_secret)
 
-headers = {"X-Mashape-Key": tokens.x_mashape_key, "Accept" : "application/json"}
-response = requests.get(url="https://football-prediction-api.p.mashape.com/api/v1/predictions?federation=uefa", headers=headers)
-json_response = response.json()
+# Example JSON response
+json_response = {"data": [{"federation": "UEFA", "home_team": "Manchester City", "prediction": "1", "status": "pending", "season": "2017 - 2018", "start_date": "2018-04-22T16:30:00", "result": "", "odds": {"X": 8.458, "12": 1.053, "2": 20.46, "X2": 5.864, "1": 1.135, "1X": 1.013}, "id": 13249, "competition_cluster": "England", "last_update_at": "2018-04-22T14:06:35.857000", "competition_name": "Premiership", "is_expired": "false", "away_team": "Swansea"}]}
+
+# Football prediction API
+#headers = {"X-Mashape-Key": tokens.x_mashape_key, "Accept" : "application/json"}
+#response = requests.get(url="https://football-prediction-api.p.mashape.com/api/v1/predictions?federation=uefa", headers=headers)
+#json_response = response.json()
 
 #print(json.dumps(json_response, indent=4))
 
@@ -57,9 +61,21 @@ def tweeting_relevant_data(competition_name, home_team, away_team, prediction, d
     else:
         winner = away_team + " win"
 
-    tweet = "{}\n{} vs {}\nTime: {}\n\nPrediction: {} \n".format(competition_name, home_team, away_team, date, winner)
+    date = format_date_time(date)
 
-    api.update_status(status=tweet)
+    tweet = "#{}\n\n#{} vs #{}\nKick off: {}\n\nPrediction: {} \n".format(competition_name, home_team.replace(" ", ""), away_team.replace(" ", ""), date, winner)
+
+    #twitter_api.update_status(status=tweet)
     print("Tweet: {}".format(tweet))
+
+def format_date_time(date_and_time):
+    date = date_and_time.split("T")[0]
+    time = date_and_time.split("T")[1]
+
+    year, month, day = date.split("-")
+
+    time = time.split(":")[0] + ":" + time.split(":")[1]
+
+    return "{}/{}/{} {}".format(day, month, year, time)
 
 get_wanted_league_games_from_json(json_response)
